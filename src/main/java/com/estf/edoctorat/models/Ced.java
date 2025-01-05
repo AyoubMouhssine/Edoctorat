@@ -14,6 +14,6 @@ public class Ced {
     private String initial;
     private String titre;
     @OneToOne
-    @JoinColumn(name = "directeur_id")
-    private Professeur professeur;
+    @JoinColumn(name = "directeur_id", nullable = false)
+    private Professeur directeur;
 }

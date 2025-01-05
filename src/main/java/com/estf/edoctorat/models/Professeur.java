@@ -24,12 +24,11 @@ public class Professeur {
     @JoinColumn(name = "etablissement_id")
     private Etablissement etablissement;
     @ManyToOne
-    @JoinColumn(name = "laboratoire_id")
+    @JoinColumn(name = "labo_id", referencedColumnName = "id", nullable = false)
     private Laboratoire laboratoire;
     @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
     @ManyToMany(mappedBy = "professeurs")
     private List<Commission> commissions;
-
 }
