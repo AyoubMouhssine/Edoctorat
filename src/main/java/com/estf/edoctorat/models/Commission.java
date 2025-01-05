@@ -16,7 +16,8 @@ public class Commission {
     private Date dateCommission;
     private String lieu;
     private Time heure;
-    @JoinColumn(name = "laboratoire_id")
+    @ManyToOne
+    @JoinColumn(name = "laboratoire_id", referencedColumnName = "id", nullable = false)
     private Laboratoire laboratoire;
     @ManyToMany
     @JoinTable(
