@@ -1,9 +1,6 @@
 package com.estf.edoctorat.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Data;
 
 import java.util.Date;
@@ -13,9 +10,12 @@ import java.util.Date;
 public class DirecteurPoleCalendrier {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
     private String action;
+    @Column(nullable = false)
     private Date dateDebut;
+    @Column(nullable = false)
     private Date dateFin;
+    @Column(nullable = false)
     private String pour;
 }

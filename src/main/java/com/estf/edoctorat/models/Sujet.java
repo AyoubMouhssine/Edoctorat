@@ -7,27 +7,25 @@ import java.util.List;
 
 @Entity
 @Data
+@Table(name = "sujets")
 public class Sujet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String titre;
     private String description;
     private boolean publier;
     @OneToOne
     @JoinColumn(name = "codirecteur_id")
-    private Professeur coDirecteur;
+    private Professeur codirecteur;
     @ManyToOne
     @JoinColumn(name = "formationDoctorale_id")
     private FormationDoctorale formationDoctorale;
-    @ManyToOne
+    @OneToMany(mappedBy = "sujet", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CandidatPostuler> candidatPostulers;
+    @OneToOne
     @JoinColumn(name = "professeur_id")
     private Professeur professeur;
-
-    @ManyToMany
-    @JoinTable(
-            name = "candidat_sujet",
-            joinColumns = @JoinColumn(name = "sujet_id"),
-            inverseJoinColumns = @JoinColumn(name = "candidat_id")
-    )
-    private List<Candidat> candidats;
+    @OneToMany(mappedBy = "sujet", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Notification> notifications;
 }

@@ -8,11 +8,13 @@ import java.util.List;
 
 @Entity
 @Data
-@Table(name = "permissions")
-public class Permission {
+@Table(name = "auth_group")
+public class AuthGroup {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    private String codename;
+    @ManyToOne
+    @JoinColumn(name="user_group_id")
+    private UserGroup userGroup;
 }

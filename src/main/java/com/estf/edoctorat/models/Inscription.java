@@ -7,13 +7,14 @@ import java.util.Date;
 
 @Entity
 @Data
+@Table(name = "inscriptions")
 public class Inscription {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Date dateDiposeDossier;
+    private Date dateDisposeDossier;
     private String remarque;
-    private boolean valider;
+    private byte valider;
     @OneToOne
     @JoinColumn(name = "candidat_id")
     private Candidat candidat;

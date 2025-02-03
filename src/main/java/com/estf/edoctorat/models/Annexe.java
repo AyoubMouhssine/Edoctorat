@@ -6,6 +6,7 @@ import lombok.Data;
 
 @Entity
 @Data
+@Table(name="annexes")
 public class Annexe {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -14,6 +15,6 @@ public class Annexe {
     private String titre;
     private String pathFile;
     @ManyToOne
-    @JoinColumn(name = "diplome_id")
+    @JoinColumn(name = "diplome_id", nullable = false)
     private Diplome diplome;
 }

@@ -8,6 +8,7 @@ import java.util.List;
 
 @Entity
 @Data
+@Table(name = "professeurs")
 public class Professeur {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,15 +21,17 @@ public class Professeur {
     private String numSOM;
     private int nombreEncadrer;
     private int nombreProposer;
+    //    @OneToOne
+    //    @JoinColumn(name = "labo_id", referencedColumnName = "id", nullable = false)
+    private long labo_id;
     @ManyToOne
     @JoinColumn(name = "etablissement_id")
     private Etablissement etablissement;
-    @ManyToOne
-    @JoinColumn(name = "labo_id", referencedColumnName = "id", nullable = false)
-    private Laboratoire laboratoire;
     @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
-    @ManyToMany(mappedBy = "professeurs")
-    private List<Commission> commissions;
+    @OneToMany(mappedBy = "professeur", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CommissionProfesseur> commissionProfesseurs;
+    @OneToOne(mappedBy = "professeur", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Ced ced;
 }

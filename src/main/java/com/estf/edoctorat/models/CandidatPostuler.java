@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "candidat_sujet")
+@Table(name = "candidat_postuler")
 public class CandidatPostuler {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -13,7 +13,7 @@ public class CandidatPostuler {
     private String pathFile;
     @ManyToOne
     @JoinColumn(name = "candidat_id")
-    private Candidat Candidat;
+    private Candidat candidat;
     @ManyToOne
     @JoinColumn(name = "sujet_id")
     private Sujet sujet;

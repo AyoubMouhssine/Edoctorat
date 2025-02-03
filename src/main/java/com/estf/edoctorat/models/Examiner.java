@@ -13,6 +13,7 @@ public class Examiner {
     private float noteDossier ;
     private int noteEntretien ;
     private byte publier ;
+    private boolean valider;
     @OneToOne
     @JoinColumn(name = "commission_id")
     private Commission commission ;
@@ -22,5 +23,4 @@ public class Examiner {
     @OneToOne
     @JoinColumn(name = "candidat_id")
     private Candidat candidat ;
-    private boolean valider ;
 }

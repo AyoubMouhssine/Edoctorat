@@ -9,6 +9,7 @@ import java.util.List;
 
 @Entity
 @Data
+@Table(name = "candidat")
 public class Candidat {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,9 +36,13 @@ public class Candidat {
     @ManyToOne
     @JoinColumn(name = "pays_id")
     private Pays pays;
+    @OneToMany(mappedBy = "candidat", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Notification> notifications;
+    @OneToMany(mappedBy = "candidat", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Diplome> diplomes;
+    @OneToMany(mappedBy = "candidat", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CandidatPostuler> candidatPostulers;
     @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
-    @ManyToMany(mappedBy = "candidats")
-    private List<Sujet> sujets;
 }
