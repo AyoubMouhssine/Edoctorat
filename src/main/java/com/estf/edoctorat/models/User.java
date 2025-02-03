@@ -2,10 +2,8 @@ package com.estf.edoctorat.models;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import java.sql.Date;
-import java.util.*;
+import java.util.Date;
+
 
 @Entity
 @Data
@@ -31,4 +29,16 @@ public class User {
     @ManyToOne
     @JoinTable(name = "user_group_id")
     private UserGroup userGroup;
+
+    public boolean getIsActive(){
+        return this.isActive;
+    }
+
+    public void setIsActive(boolean active){
+        this.isActive = active;
+    }
+
+    public void setIsStuff(boolean stuff) {
+        this.isStaff = stuff;
+    }
 }
