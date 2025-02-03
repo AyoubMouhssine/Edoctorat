@@ -14,14 +14,18 @@ public class Laboratoire {
     private String description;
     private String pathImage;
     private String initial;
+
     @OneToOne(mappedBy = "laboratoire", cascade = CascadeType.ALL, orphanRemoval = true)
     private Commission commission;
+
     @OneToOne
     @JoinColumn(name = "ced_id")
     private Ced ced;
+
     @OneToOne
     @JoinColumn(name = "directeur_id")
     private Professeur professeur;
+
     @OneToOne
     @JoinColumn(name = "etablissement_id")
     private Etablissement etablissement;

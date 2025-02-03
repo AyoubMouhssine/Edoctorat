@@ -1,10 +1,9 @@
 package com.estf.edoctorat.repositories;
 
-import com.estf.edoctorat.models.ProfesseurLaboratoire;
+import com.estf.edoctorat.models.FormationDoctorale;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-
 @Repository
-public interface ProfesseurLaboratoirRepository extends JpaRepository<ProfesseurLaboratoire, Long> {
+public interface FormationDoctoraleRepository extends JpaRepository<FormationDoctorale, Long> {
 }
