@@ -1,3 +1,4 @@
+/*
 package com.estf.edoctorat.security;
 
 import org.springframework.context.annotation.Bean;
@@ -20,7 +21,8 @@ public class SecurityConfig {
         return http.build();
     }
 
-    /*@Bean
+    */
+/*@Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
@@ -30,5 +32,6 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()); // Disable CSRF for simplicity
 
         return http.build();
-    }*/
-}
+    }*//*
+
+}*/

@@ -41,4 +41,8 @@ public class CandidatService {
         return candidatMapper.candidatToCandidatDTO(candidatRepository.save(candidat));
     }
 
+    public Candidat createCandidat(Candidat candidat) {
+        return candidatRepository.save(candidat);
+    }
+
 }
