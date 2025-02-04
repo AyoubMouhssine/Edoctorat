@@ -13,10 +13,13 @@ import com.estf.edoctorat.services.CandidatService;
 import com.estf.edoctorat.services.EmailService;
 import com.estf.edoctorat.services.JwtService;
 import com.estf.edoctorat.services.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -36,7 +39,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Cookie;
-
+@Slf4j
 @RestController
 @RequestMapping("/api")
 public class AuthController {
@@ -113,39 +116,48 @@ public class AuthController {
 
 
     @PostMapping("/token/")
-    public ResponseEntity<?> authenticate(
-            @RequestBody LoginRequest request,
-            HttpServletResponse response) {
+    public ResponseEntity<?> authenticate(@RequestBody LoginRequest request) {
         try {
             User user = userRepository.findByEmail(request.getUsername())
-                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
-            );
+                    .orElseThrow(() -> {
+                        log.warn("Authentication failed: User not found - {}", request.getUsername());
+                        return new UsernameNotFoundException("User not found");
+                    });
+            try {
+                Authentication authentication = authenticationManager.authenticate(
+                        new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
+                );
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            } catch (BadCredentialsException e) {
+                return ResponseEntity
+                        .status(HttpStatus.UNAUTHORIZED)
+                        .body(new ErrorResponse(
+                                "Invalid credentials",
+                                "AUTH_001",
+                                System.currentTimeMillis()
+                        ));
+            }
 
             UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
-            String token = jwtService.generateToken(userDetails);
-            String refreshToken = jwtService.generateToken(Map.of("tokenType", "refresh"), userDetails);
-
-//            // Set JWT cookie
-//            Cookie jwtCookie = new Cookie("jwt", token);
-//            jwtCookie.setHttpOnly(true);
-//            jwtCookie.setPath("/");
-//            jwtCookie.setMaxAge(24 * 60 * 60); // 24 hours
-//            response.addCookie(jwtCookie);
-//
-//            // Add Authorization header
-//            response.setHeader("Authorization", "Bearer " + token);
+            String accessToken = jwtService.generateToken(userDetails);
+            String refreshToken = jwtService.generateToken(
+                    Map.of("tokenType", "refresh"),
+                    userDetails
+            );
 
             return ResponseEntity.ok()
-                    .header("Authorization", "Bearer " + token)
-                    .body(new LoginResponse(token, refreshToken));
+                    .body(new LoginResponse(accessToken, refreshToken));
+
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse(
+                            "An error occurred during authentication",
+                            "AUTH_500",
+                            System.currentTimeMillis()
+                    ));
         }
     }
-
 
     @PostMapping("/login_scolarite/")
     public ResponseEntity<?> loginScolarite(@RequestBody LoginRequest loginRequest) {
