@@ -11,9 +11,11 @@ public class CandidatPostuler {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String pathFile;
+
     @ManyToOne
     @JoinColumn(name = "candidat_id")
     private Candidat candidat;
+
     @ManyToOne
     @JoinColumn(name = "sujet_id")
     private Sujet sujet;

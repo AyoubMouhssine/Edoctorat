@@ -1,6 +1,5 @@
 package com.estf.edoctorat.models;
 
-
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -21,17 +20,20 @@ public class Professeur {
     private String numSOM;
     private int nombreEncadrer;
     private int nombreProposer;
-    //    @OneToOne
-    //    @JoinColumn(name = "labo_id", referencedColumnName = "id", nullable = false)
+
     private long labo_id;
+
     @ManyToOne
     @JoinColumn(name = "etablissement_id")
     private Etablissement etablissement;
+
     @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
+
     @OneToMany(mappedBy = "professeur", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CommissionProfesseur> commissionProfesseurs;
+
     @OneToOne(mappedBy = "professeur", cascade = CascadeType.ALL, orphanRemoval = true)
     private Ced ced;
 }
