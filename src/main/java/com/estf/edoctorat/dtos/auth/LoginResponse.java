@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class LoginScolariteResponse {
+public class LoginResponse {
     private String access;
     private String refresh;
 }

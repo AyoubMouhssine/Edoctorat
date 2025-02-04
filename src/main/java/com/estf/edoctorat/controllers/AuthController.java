@@ -16,6 +16,7 @@ import com.estf.edoctorat.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -127,19 +128,19 @@ public class AuthController {
             String token = jwtService.generateToken(userDetails);
             String refreshToken = jwtService.generateToken(Map.of("tokenType", "refresh"), userDetails);
 
-            // Set JWT cookie
-            Cookie jwtCookie = new Cookie("jwt", token);
-            jwtCookie.setHttpOnly(true);
-            jwtCookie.setPath("/");
-            jwtCookie.setMaxAge(24 * 60 * 60); // 24 hours
-            response.addCookie(jwtCookie);
-
-            // Add Authorization header
-            response.setHeader("Authorization", "Bearer " + token);
+//            // Set JWT cookie
+//            Cookie jwtCookie = new Cookie("jwt", token);
+//            jwtCookie.setHttpOnly(true);
+//            jwtCookie.setPath("/");
+//            jwtCookie.setMaxAge(24 * 60 * 60); // 24 hours
+//            response.addCookie(jwtCookie);
+//
+//            // Add Authorization header
+//            response.setHeader("Authorization", "Bearer " + token);
 
             return ResponseEntity.ok()
-                    .header("Access-Control-Expose-Headers", "Authorization")
-                    .body(new AuthResponse(token, refreshToken, createUserInfo(user)));
+                    .header("Authorization", "Bearer " + token)
+                    .body(new LoginResponse(token, refreshToken));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
         }
@@ -164,7 +165,7 @@ public class AuthController {
 
                 String accessToken = jwtService.generateToken(userDetails);
                 String refreshToken = jwtService.generateToken(Map.of("tokenType", "refresh"), userDetails);
-                return ResponseEntity.ok(new LoginScolariteResponse(accessToken, refreshToken));
+                return ResponseEntity.ok(new LoginResponse(accessToken, refreshToken));
             }
             return ResponseEntity.status(401)
                     .body("Unauthorized: User details not found");
@@ -331,8 +332,8 @@ public class AuthController {
     }
 
     @GetMapping("/get-user-info/")
-    public ResponseEntity<?> getUserInfo(HttpServletRequest request) {
-        UserDetails userDetails = (UserDetails) request.getAttribute("user");
+    public ResponseEntity<?> getUserInfo(Authentication authentication) {
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         User user = ((CustomUserDetails) userDetails).getUser();
         return ResponseEntity.ok(createUserInfo(user));
     }
