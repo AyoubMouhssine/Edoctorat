@@ -9,6 +9,7 @@ import com.estf.edoctorat.config.CustomUserDetails;
 import com.estf.edoctorat.config.GoogleTokenVerifier;
 import com.estf.edoctorat.dtos.auth.*;
 import com.estf.edoctorat.models.*;
+import com.estf.edoctorat.repositories.*;
 import com.estf.edoctorat.services.CandidatService;
 import com.estf.edoctorat.services.EmailService;
 import com.estf.edoctorat.services.JwtService;
@@ -31,10 +32,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.estf.edoctorat.repositories.CandidatRepository;
-import com.estf.edoctorat.repositories.PaysRepository;
-import com.estf.edoctorat.repositories.ProfesseurRepository;
-import com.estf.edoctorat.repositories.UserRepository;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -67,6 +64,10 @@ public class AuthController {
     private EmailService emailService;
     @Autowired
     CandidatService candidatService;
+    @Autowired
+    AuthGroupRepository authGroupRepository;
+    @Autowired
+    UserGroupRepository userGroupRepository;
 
     private GoogleIdToken.Payload verifyGoogleToken(String idTokenString) throws GeneralSecurityException, IOException {
         return googleTokenVerifier.verify(idTokenString);
@@ -75,6 +76,7 @@ public class AuthController {
     @PostMapping("/confirm-email/")
     public ResponseEntity<Map<String, String>> confirmEmail(@RequestBody EmailConfirmationRequest request) {
         if (userService.emailExists(request.getEmail())) {
+            log.error("ERROR => EMAIL ALREADY IN USE ");
             return ResponseEntity.badRequest().body(Map.of("error", "Email already in use"));
         }
 
@@ -84,8 +86,9 @@ public class AuthController {
         String confirmationUrl = request.getOrigin() + "?token=" + token;
 
         emailService.sendConfirmationEmail(user.getEmail(), confirmationUrl);
-
+        log.error("SUCCESS => CONFIRMATION EMAIL SENT ");
         return ResponseEntity.ok(Map.of("message", "Confirmation email sent"));
+
     }
 
     @PostMapping("/verify-token/")
@@ -174,7 +177,6 @@ public class AuthController {
                     return ResponseEntity.status(403)
                             .body("Access denied: User must be staff");
                 }
-
                 String accessToken = jwtService.generateToken(userDetails);
                 String refreshToken = jwtService.generateToken(Map.of("tokenType", "refresh"), userDetails);
                 return ResponseEntity.ok(new LoginResponse(accessToken, refreshToken));
@@ -200,9 +202,11 @@ public class AuthController {
     }
 
     private AuthResponse.UserInfo createUserInfo(User user) {
-        List<String> groups = user.getUserGroup() != null ? user.getUserGroup().getGroups().stream()
-                .map(AuthGroup::getName)
-                .collect(Collectors.toList()) : Collections.emptyList();
+        List<String> groups = user.getUserGroups() != null
+                ? user.getUserGroups().stream()
+                .map(userAuthGroup -> userAuthGroup.getAuthGroup().getName())
+                .collect(Collectors.toList())
+                : Collections.emptyList();
 
         Map<String, Object> misc = new HashMap<>();
 
@@ -220,11 +224,14 @@ public class AuthController {
                 misc);
     }
 
+
     private AuthResponse.UserInfo createProfessorInfo(Professeur professor) {
         User user = professor.getUser();
-        List<String> groups = user.getUserGroup() != null ? user.getUserGroup().getGroups().stream()
-                .map(AuthGroup::getName)
-                .collect(Collectors.toList()) : Collections.emptyList();
+        List<String> groups = user.getUserGroups() != null
+                ? user.getUserGroups().stream()
+                .map(userAuthGroup -> userAuthGroup.getAuthGroup().getName())
+                .collect(Collectors.toList())
+                : Collections.emptyList();
 
         Map<String, Object> misc = new HashMap<>();
         misc.put("grade", professor.getGrade());
@@ -244,9 +251,11 @@ public class AuthController {
 
     private AuthResponse.UserInfo createCandidatInfo(Candidat candidat) {
         User user = candidat.getUser();
-        List<String> groups = user.getUserGroup() != null ? user.getUserGroup().getGroups().stream()
-                .map(AuthGroup::getName)
-                .collect(Collectors.toList()) : Collections.emptyList();
+        List<String> groups = user.getUserGroups() != null
+                ? user.getUserGroups().stream()
+                .map(userAuthGroup -> userAuthGroup.getAuthGroup().getName())
+                .collect(Collectors.toList())
+                : Collections.emptyList();
 
         Map<String, Object> misc = new HashMap<>();
         misc.put("cne", candidat.getCne());
@@ -301,9 +310,35 @@ public class AuthController {
             user.setPassword(passwordEncoder.encode(request.getPassword()));
             user.setIsActive(true);
             user.setDateJoined(new Date());
-
             userRepository.save(user);
             paysRepository.save(pays);
+
+            List<String> groupNames = List.of("candidat");
+            if (user.getUserGroups() == null) {
+                user.setUserGroups(new ArrayList<>());
+            }
+
+            for (String groupName : groupNames) {
+                AuthGroup authGroup = authGroupRepository.findByName(groupName)
+                        .orElseGet(() -> {
+                            AuthGroup newGroup = new AuthGroup();
+                            newGroup.setName(groupName);
+                            return authGroupRepository.save(newGroup);
+                        });
+
+                // Check if the user already has the group to avoid duplicates
+                boolean alreadyAssigned = user.getUserGroups().stream()
+                        .anyMatch(ug -> ug.getAuthGroup().getName().equals(groupName));
+
+                if (!alreadyAssigned) {
+                    UserGroup userGroup = new UserGroup();
+                    userGroup.setUser(user);
+                    userGroup.setAuthGroup(authGroup);
+                    user.getUserGroups().add(userGroup);
+                }
+            }
+
+            userRepository.save(user);
 
             Candidat candidat = new Candidat();
             candidat.setUser(user);

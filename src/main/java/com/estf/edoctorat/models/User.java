@@ -2,7 +2,10 @@ package com.estf.edoctorat.models;
 
 import jakarta.persistence.*;
 import lombok.Data;
+
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 
 @Entity
@@ -26,9 +29,8 @@ public class User {
     private Professeur professeur;
     @OneToOne(mappedBy = "user")
     private Candidat candidat;
-    @ManyToOne
-    @JoinTable(name = "user_group_id")
-    private UserGroup userGroup;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserGroup> userGroups = new ArrayList<>();
 
     public boolean getIsActive(){
         return this.isActive;

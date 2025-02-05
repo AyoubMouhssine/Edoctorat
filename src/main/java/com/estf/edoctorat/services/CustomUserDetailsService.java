@@ -2,6 +2,8 @@ package com.estf.edoctorat.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import com.estf.edoctorat.config.CustomUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -21,19 +23,13 @@ public class CustomUserDetailsService implements UserDetailsService {
     private UserRepository userRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        // Find user by email
-        User user = userRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + username));
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userRepository.findByEmailWithGroups(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        // Create authorities from user groups
-        List<GrantedAuthority> authorities = new ArrayList<>();
-        if (user.getUserGroup() != null && user.getUserGroup().getGroups() != null) {
-            for (AuthGroup group : user.getUserGroup().getGroups()) {
-                authorities.add(new SimpleGrantedAuthority(group.getName()));
-            }
-        }
-
+        List<GrantedAuthority> authorities = user.getUserGroups().stream()
+                .map(userGroup -> (GrantedAuthority) new SimpleGrantedAuthority(userGroup.getAuthGroup().getName()))
+                .collect(Collectors.toList());
         return new CustomUserDetails(user, authorities);
     }
 }

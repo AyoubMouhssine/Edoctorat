@@ -4,7 +4,9 @@ package com.estf.edoctorat.models;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
+
 
 @Entity
 @Data
@@ -14,7 +16,6 @@ public class AuthGroup {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    @ManyToOne
-    @JoinColumn(name="user_group_id")
-    private UserGroup userGroup;
+    @OneToMany(mappedBy = "authGroup", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserGroup> userGroups = new ArrayList<>();
 }
