@@ -1,8 +1,10 @@
 package com.estf.edoctorat.config;
 
 import com.estf.edoctorat.models.AuthGroup;
+import com.estf.edoctorat.models.Config;
 import com.estf.edoctorat.models.User;
 import com.estf.edoctorat.repositories.AuthGroupRepository;
+import com.estf.edoctorat.repositories.ConfigRepository;
 import com.estf.edoctorat.repositories.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -19,10 +21,12 @@ public class DataInitializer implements CommandLineRunner {
     private final UserRepository userRepository;
     private final PasswordEncoder bCryptPasswordEncoder;
     private final AuthGroupRepository authGroupRepository;
-    public DataInitializer(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthGroupRepository authGroupRepository) {
+    private final ConfigRepository configRepository;
+    public DataInitializer(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthGroupRepository authGroupRepository, ConfigRepository configRepository) {
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = passwordEncoder;
         this.authGroupRepository = authGroupRepository;
+        this.configRepository = configRepository;
     }
 
     @Override
@@ -49,5 +53,16 @@ public class DataInitializer implements CommandLineRunner {
                 authGroupRepository.save(authGroup);
             }
         }
+
+        if(configRepository.findById(1L).isEmpty()) {
+            Config config = new Config();
+            config.setMaxSujetPostuler(5);
+            config.setDateDebutPostulerSujetCandidat(new Date());
+            config.setDateDebutModifierSujetProf(new Date());
+            config.setDateFinPostulerSujetCandidat(new Date());
+            config.setDateFinModifierSujetProf(new Date());
+        configRepository.save(config);
+        }
+
     }
 }
