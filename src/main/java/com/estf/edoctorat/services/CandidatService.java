@@ -1,4 +1,3 @@
-// src/main/java/com/estf/edoctorat/services/CandidatService.java
 package com.estf.edoctorat.services;
 
 import com.estf.edoctorat.dto.CandidatDTO;
@@ -22,10 +21,12 @@ public class CandidatService {
         Optional<Candidat> candidat =  candidatRepository.findById(id);
         return candidat.map(candidatMapper::candidatToCandidatDTO).orElse(null);
     }
+
     public CandidatDTO getCandidatByUserId(Long id) {
-        Optional<Candidat> candidat =  candidatRepository.findAll().stream().filter(c -> c.getUser().getId().equals(id)).findFirst();
+        Optional<Candidat> candidat = candidatRepository.findByUserId(id);
         return candidat.map(candidatMapper::candidatToCandidatDTO).orElse(null);
     }
+
     public CandidatDTO updateCandidat(Long id, CandidatDTO candidatDTO) {
         Optional<Candidat> existingCandidat = candidatRepository.findById(id);
         if (existingCandidat.isPresent()) {
