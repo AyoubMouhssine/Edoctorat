@@ -4,7 +4,6 @@ import lombok.Data;
 public class NotificationDTO {
     private Long id;
     private String type;
-    private Long candidatId;
     private Long commissionId;
     private Long sujetId;
 }

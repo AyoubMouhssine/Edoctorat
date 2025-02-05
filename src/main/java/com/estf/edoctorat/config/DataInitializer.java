@@ -64,6 +64,7 @@ public class DataInitializer implements CommandLineRunner {
             config.setDateFinPostulerSujetCandidat(java.sql.Date.valueOf(LocalDate.parse("15-10-2025", formatter)));
             config.setDateFinModifierSujetProf(java.sql.Date.valueOf(LocalDate.parse("20-09-2025", formatter)));
             configRepository.save(config);
+            System.out.println("Initial config created!");
         }
     }
 }
