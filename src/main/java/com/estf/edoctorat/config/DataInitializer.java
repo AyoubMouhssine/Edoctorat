@@ -11,6 +11,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -53,16 +55,15 @@ public class DataInitializer implements CommandLineRunner {
                 authGroupRepository.save(authGroup);
             }
         }
-
-        if(configRepository.findById(1L).isEmpty()) {
+        if (configRepository.findById(1L).isEmpty()) {
             Config config = new Config();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
             config.setMaxSujetPostuler(5);
-            config.setDateDebutPostulerSujetCandidat(new Date());
-            config.setDateDebutModifierSujetProf(new Date());
-            config.setDateFinPostulerSujetCandidat(new Date());
-            config.setDateFinModifierSujetProf(new Date());
-        configRepository.save(config);
+            config.setDateDebutPostulerSujetCandidat(java.sql.Date.valueOf(LocalDate.parse("01-10-2025", formatter)));
+            config.setDateDebutModifierSujetProf(java.sql.Date.valueOf(LocalDate.parse("01-09-2025", formatter)));
+            config.setDateFinPostulerSujetCandidat(java.sql.Date.valueOf(LocalDate.parse("15-10-2025", formatter)));
+            config.setDateFinModifierSujetProf(java.sql.Date.valueOf(LocalDate.parse("20-09-2025", formatter)));
+            configRepository.save(config);
         }
-
     }
 }
