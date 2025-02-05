@@ -17,14 +17,11 @@ public class NotificationService {
 
     private final NotificationMapper notificationMapper = NotificationMapper.INSTANCE;
 
-    public List<NotificationDTO> getNotifications() {
-        return notificationRepository.findAll().stream()
-                .map(notificationMapper::notificationToNotificationDTO)
-                .collect(Collectors.toList());
-    }
-    public  List<NotificationDTO> getNotificationsByCandidatId(Long candidatId) {
-        return notificationRepository.findByCandidatId(candidatId).stream()
-                .map(notificationMapper::notificationToNotificationDTO)
+
+    public List<NotificationDTO> getAllNotifications() {
+        List<Notification> notifications = notificationRepository.findAll();
+        return notifications.stream()
+                .map(NotificationMapper.INSTANCE::notificationToNotificationDTO)
                 .collect(Collectors.toList());
     }
 

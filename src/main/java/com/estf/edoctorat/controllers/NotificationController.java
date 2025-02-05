@@ -21,21 +21,11 @@ public class NotificationController {
     @GetMapping("/get-candidat-notifications/")
     public ResponseEntity<?> getNotifications() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
 
-        if (!authentication.isAuthenticated()) {
+        if (authentication == null || !authentication.isAuthenticated()) {
             return ResponseEntity.status(401).body("User not authenticated");
         }
-
-        Long candidatId = customUserDetails.getUser().getId();
-
-        List<NotificationDTO> notificationDTOS;
-        if(candidatId == null){
-            notificationDTOS = notificationService.getNotifications();
-        }else{
-            notificationDTOS =  notificationService.getNotificationsByCandidatId(candidatId);
-        }
-        return ResponseEntity.ok(notificationDTOS);
+        return ResponseEntity.ok(notificationService.getAllNotifications());
     }
     @GetMapping("/get-candidat-notifications/{id}")
     public ResponseEntity<NotificationDTO> getNotificationById(@PathVariable Long id) {
