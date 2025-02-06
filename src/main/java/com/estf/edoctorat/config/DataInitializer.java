@@ -6,6 +6,7 @@ import com.estf.edoctorat.models.User;
 import com.estf.edoctorat.repositories.AuthGroupRepository;
 import com.estf.edoctorat.repositories.ConfigRepository;
 import com.estf.edoctorat.repositories.UserRepository;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;

@@ -56,5 +56,4 @@ public class CustomUserDetails implements UserDetails {
     public boolean isStaff(){
         return user.isStaff();
     }
-
 }
