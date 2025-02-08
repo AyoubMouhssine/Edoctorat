@@ -23,4 +23,18 @@ public class AuthResponse {
         private List<String> groups;
         private Map<String, Object> misc;
     }
+
+    @Data
+    @AllArgsConstructor
+    public static class ProfesseurInfo {
+        String email;
+        String nom;
+        String prenom;
+        String pathPhoto;
+        List<String> groups;
+        private Map<String, Object> misc;
+        String grade;
+        int nombreProposer;
+        int nombreEncadrer;
+    }
 }

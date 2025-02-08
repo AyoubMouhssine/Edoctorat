@@ -37,7 +37,7 @@ public class SecurityConfig {
                                 "/api/login",
                                 "/api/register/candidat/",
                                 "/api/token/refresh",
-                                "/api/verify-is-prof",
+                                "/api/verify-is-prof/",
                                 "/error",
                                 "/api/confirm-email/",
                                 "/api/verify-token/",
@@ -58,7 +58,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200")); // Allow all origins
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList(
                 "Authorization",
