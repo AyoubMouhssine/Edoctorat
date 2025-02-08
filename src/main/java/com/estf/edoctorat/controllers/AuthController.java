@@ -14,6 +14,7 @@ import com.estf.edoctorat.services.CandidatService;
 import com.estf.edoctorat.services.EmailService;
 import com.estf.edoctorat.services.JwtService;
 import com.estf.edoctorat.services.UserService;
+import com.google.api.client.googleapis.util.Utils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
@@ -69,8 +70,18 @@ public class AuthController {
     @Autowired
     UserGroupRepository userGroupRepository;
 
-    private GoogleIdToken.Payload verifyGoogleToken(String idTokenString) throws GeneralSecurityException, IOException {
-        return googleTokenVerifier.verify(idTokenString);
+//    private GoogleIdToken.Payload verifyGoogleToken(String idTokenString) throws GeneralSecurityException, IOException {
+//        return googleTokenVerifier.verify(idTokenString);
+//    }
+
+    public GoogleIdToken.Payload verifyGoogleToken(String idToken) throws GeneralSecurityException, IOException {
+        System.out.println("Verifying Google Token: " + idToken);
+        GoogleIdToken token = GoogleIdToken.parse(Utils.getDefaultJsonFactory(), idToken);
+        if (token == null) {
+            System.out.println("Invalid token: Token is null");
+            return null;
+        }
+        return token.getPayload();
     }
 
     @PostMapping("/confirm-email/")

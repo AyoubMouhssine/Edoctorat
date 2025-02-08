@@ -34,7 +34,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/api/login",
+                                "/api/login/",
                                 "/api/register/candidat/",
                                 "/api/token/refresh",
                                 "/api/verify-is-prof",
