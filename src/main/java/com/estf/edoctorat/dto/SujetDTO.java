@@ -11,5 +11,4 @@ public class SujetDTO {
     private ProfesseurDTO professeur;
     private ProfesseurDTO coDirecteur;
     private FormationDoctoraleDTO formationDoctorale;
-
 }
