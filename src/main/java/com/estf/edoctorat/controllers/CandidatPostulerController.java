@@ -1,5 +1,6 @@
 package com.estf.edoctorat.controllers;
 import com.estf.edoctorat.dto.CandidatPostulerDTO;
+import com.estf.edoctorat.dto.Result;
 import com.estf.edoctorat.services.CandidatPostulerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -44,5 +45,12 @@ public class CandidatPostulerController {
     public ResponseEntity<CandidatPostulerDTO> updateCandidatPostuler(@PathVariable Long id, @RequestBody CandidatPostulerDTO candidatPostulerDTO) {
         CandidatPostulerDTO updateCandidatPostulerDTO =   candidatPostulerService.updateCandidatPostuler(id,candidatPostulerDTO);
         return  updateCandidatPostulerDTO != null ? ResponseEntity.ok(updateCandidatPostulerDTO) : ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/get-professeur-candidats")
+    public ResponseEntity<Result<CandidatPostulerDTO>> getProfesseurCandidats() {
+        Result<CandidatPostulerDTO> result = candidatPostulerService.getProfesseurCandidats();
+        System.out.println(result);
+        return ResponseEntity.ok(result);
     }
 }

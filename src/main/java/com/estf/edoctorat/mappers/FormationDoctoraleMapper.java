@@ -5,7 +5,8 @@ import com.estf.edoctorat.models.FormationDoctorale;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
-@Mapper
+@Mapper(componentModel = "spring")  // This will make it a Spring bean
+
 public interface FormationDoctoraleMapper {
     FormationDoctoraleMapper INSTANCE = Mappers.getMapper(FormationDoctoraleMapper.class);
 
@@ -16,5 +17,6 @@ public interface FormationDoctoraleMapper {
     @Mapping(source = "cedId", target = "ced.id")
     @Mapping(source = "etablissementId", target = "etablissement.idEtablissement")
     FormationDoctorale formationDoctoraleDTOToFormationDoctorale(FormationDoctoraleDTO formationDoctoraleDTO);
+    FormationDoctoraleDTO toDTO(FormationDoctorale formationDoctorale);
 
 }

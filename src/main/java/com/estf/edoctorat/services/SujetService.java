@@ -1,14 +1,17 @@
 package com.estf.edoctorat.services;
 
+import com.estf.edoctorat.dto.FormationDoctoraleDTO;
+import com.estf.edoctorat.dto.Result;
 import com.estf.edoctorat.dto.SujetDTO;
+import com.estf.edoctorat.mappers.FormationDoctoraleMapper;
 import com.estf.edoctorat.mappers.SujetMapper;
+import com.estf.edoctorat.models.FormationDoctorale;
 import com.estf.edoctorat.models.Sujet;
+import com.estf.edoctorat.repositories.FormationDoctoraleRepository;
 import com.estf.edoctorat.repositories.SujetRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -17,41 +20,52 @@ public class SujetService {
     @Autowired
     private SujetRepository sujetRepository;
 
-    private final SujetMapper sujetMapper = SujetMapper.INSTANCE;
+    @Autowired
+    private SujetMapper sujetMapper;
+    @Autowired
+    private FormationDoctoraleRepository formationDoctoraleRepository;
+    @Autowired
+    private FormationDoctoraleMapper formationDoctoraleMapper;
 
-    public List<SujetDTO> getSujets() {
-        return sujetRepository.findAll().stream()
-                .map(sujetMapper::sujetToSujetDTO)
-                .collect(Collectors.toList());
+
+    public Result<SujetDTO> getSujets(int limit, int offset) {
+        List<Sujet> sujets = sujetRepository.findSujetsWithPagination(limit, offset);
+        List<SujetDTO> sujetDTOs = sujets.stream().map(sujetMapper::toDTO).collect(Collectors.toList());
+        int total = (int) sujetRepository.count(); // Get total count
+        // Specify Result<SujetDTO> explicitly
+        Result<SujetDTO> result = new Result<>(sujetDTOs, total);
+        return result;
     }
 
-    public SujetDTO getSujet(Long id) {
-        Optional<Sujet> sujet = sujetRepository.findById(id);
-        return sujet.map(sujetMapper::sujetToSujetDTO).orElse(null);
+    public Result<SujetDTO> getSujets() {
+        List<Sujet> sujets = sujetRepository.findAll();
+        List<SujetDTO> sujetDTOs = sujets.stream().map(sujetMapper::toDTO).collect(Collectors.toList());
+        // Specify Result<SujetDTO> explicitly
+        Result<SujetDTO> result = new Result<>(sujetDTOs, sujetDTOs.size()); // Using size for total count
+        return result;
     }
 
-    public SujetDTO createSujet(SujetDTO sujetDTO) {
-        Sujet sujet = sujetMapper.sujetDTOToSujet(sujetDTO);
-        return sujetMapper.sujetToSujetDTO(sujetRepository.save(sujet));
-    }
+    public Result<SujetDTO> addSujet(SujetDTO sujetDTO) {
+        // Retrieve the FormationDoctorale by its ID
+        FormationDoctorale formationDoctorale = formationDoctoraleRepository.findById(sujetDTO.getFormationDoctoraleId())
+                .orElseThrow(() -> new RuntimeException("FormationDoctorale not found"));
 
-    public SujetDTO updateSujet(Long id, SujetDTO sujetDTO) {
-        Optional<Sujet> existingSujet = sujetRepository.findById(id);
-        if (existingSujet.isPresent()) {
-            Sujet sujet = sujetMapper.sujetDTOToSujet(sujetDTO);
-            sujet.setId(existingSujet.get().getId());
-            return sujetMapper.sujetToSujetDTO(sujetRepository.save(sujet));
-        } else {
-            return null;
-        }
-    }
+        // Map the FormationDoctorale entity to FormationDoctoraleDTO
+        FormationDoctoraleDTO formationDoctoraleDTO = formationDoctoraleMapper.toDTO(formationDoctorale);
 
-    public boolean deleteSujet(Long id) {
-        if (sujetRepository.existsById(id)) {
-            sujetRepository.deleteById(id);
-            return true;
-        } else {
-            return false;
-        }
+        // Set the FormationDoctoraleDTO in the SujetDTO
+        sujetDTO.setFormationDoctorale(formationDoctoraleDTO);
+
+        // Convert DTO to Entity
+        Sujet sujet = sujetMapper.toEntity(sujetDTO);
+
+        // Save the Sujet entity
+        Sujet savedSujet = sujetRepository.save(sujet);
+
+        // Convert back to DTO
+        SujetDTO savedSujetDTO = sujetMapper.toDTO(savedSujet);
+
+        // Return the result
+        return new Result<>(List.of(savedSujetDTO), 1); // Assuming 1 item is created
     }
 }

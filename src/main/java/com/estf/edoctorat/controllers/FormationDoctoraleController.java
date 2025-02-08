@@ -1,5 +1,7 @@
 package com.estf.edoctorat.controllers;
 import com.estf.edoctorat.dto.FormationDoctoraleDTO;
+import com.estf.edoctorat.dto.Result;
+import com.estf.edoctorat.dto.SujetDTO;
 import com.estf.edoctorat.services.FormationDoctoraleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,9 +15,10 @@ import java.util.List;
 public class FormationDoctoraleController {
     @Autowired
     private FormationDoctoraleService formationDoctoraleService;
-    @GetMapping("/formation-doctorale")
-    public ResponseEntity<List<FormationDoctoraleDTO>> getFormationDoctorales() {
-        return ResponseEntity.ok(formationDoctoraleService.getFormationDoctorales());
+    @GetMapping("/formation-doctorale/")
+    public ResponseEntity<Result<FormationDoctoraleDTO>> getAllFormationDoctorales() {
+        Result<FormationDoctoraleDTO> result = formationDoctoraleService.getFormationDoctorales();
+        return ResponseEntity.ok(result);
     }
     @GetMapping("/formation-doctorale/{id}")
     public ResponseEntity<FormationDoctoraleDTO> getFormationDoctorale(@PathVariable Long id) {

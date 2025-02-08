@@ -42,7 +42,12 @@ public class SecurityConfig {
                                 "/api/confirm-email/",
                                 "/api/verify-token/",
                                 "/api/token/",
-                                "/api/login_scolarite/"
+                                "/api/login_scolarite/",
+                                "/api/formation-doctorale/ ",
+                                "/api/get-professeurs/",
+                                "/api/get-professeur-candidats",
+                                "/api/sujets/"
+
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

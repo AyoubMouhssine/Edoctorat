@@ -1,6 +1,7 @@
 package com.estf.edoctorat.services;
 
 import com.estf.edoctorat.dto.CandidatPostulerDTO;
+import com.estf.edoctorat.dto.Result;
 import com.estf.edoctorat.mappers.CandidatPostulerMapper;
 import com.estf.edoctorat.models.CandidatPostuler;
 import com.estf.edoctorat.repositories.CandidatPostulerRepository;
@@ -57,5 +58,12 @@ public class CandidatPostulerService {
         } else {
             return null; // Or throw exception
         }
+    }
+
+    public Result<CandidatPostulerDTO> getProfesseurCandidats() {
+        List<CandidatPostulerDTO> candidatPostulerDTOS = candidatPostulerRepository.findAll().stream()
+                .map(candidatPostulerMapper::candidatPostulerToCandidatPostulerDTO)
+                .collect(Collectors.toList());
+        return new Result<>(candidatPostulerDTOS, candidatPostulerDTOS.size());
     }
 }
