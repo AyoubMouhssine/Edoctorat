@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import com.estf.edoctorat.config.CustomUserDetails;
 import com.estf.edoctorat.config.GoogleTokenVerifier;
+import com.estf.edoctorat.dto.ProfesseurAuthResponse;
 import com.estf.edoctorat.dtos.auth.*;
 import com.estf.edoctorat.models.*;
 import com.estf.edoctorat.repositories.*;
@@ -132,7 +133,7 @@ public class AuthController {
     @PostMapping("/token/")
     public ResponseEntity<?> authenticate(@RequestBody LoginRequest request) {
         try {
-            User user = userRepository.findByEmail(request.getUsername())
+            User user = userRepository.findByEmailOrUsername(request.getUsername())
                     .orElseThrow(() -> {
                         log.warn("Authentication failed: User not found - {}", request.getUsername());
                         return new UsernameNotFoundException("User not found");
@@ -160,7 +161,7 @@ public class AuthController {
             );
 
             return ResponseEntity.ok()
-                    .body(new LoginResponse(accessToken, refreshToken));
+                    .body(new AuthResponse(accessToken, refreshToken, createUserInfo(user)));
 
         } catch (Exception e) {
             return ResponseEntity
@@ -176,27 +177,45 @@ public class AuthController {
     @PostMapping("/login_scolarite/")
     public ResponseEntity<?> loginScolarite(@RequestBody LoginRequest loginRequest) {
         try {
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
+            User user = userRepository.findByEmailOrUsername(loginRequest.getUsername())
+                    .orElseThrow(() -> {
+                        log.warn("Authentication failed: User not found - {}", loginRequest.getUsername());
+                        return new UsernameNotFoundException("User not found");
+                    });
+
+            try {
+                Authentication authentication = authenticationManager.authenticate(
+                        new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
+                );
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            } catch (BadCredentialsException e) {
+                return ResponseEntity
+                        .status(HttpStatus.UNAUTHORIZED)
+                        .body(new ErrorResponse("Invalid credentials", "AUTH_001", System.currentTimeMillis()));
+            }
+
+            UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
+            String accessToken = jwtService.generateToken(userDetails);
+            String refreshToken = jwtService.generateToken(Map.of("tokenType", "refresh"), userDetails);
+
+            LoginResponse loginResponse = new LoginResponse(
+                    accessToken,
+                    refreshToken,
+                    user.getUsername(),
+                    user.getEmail(),
+                    user.getUserGroups() != null
+                            ? user.getUserGroups().stream()
+                            .map(userAuthGroup -> userAuthGroup.getAuthGroup().getName())
+                            .collect(Collectors.toList())
+                            : Collections.emptyList()
             );
 
-            UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getUsername());
-
-            if (userDetails instanceof CustomUserDetails) {
-                CustomUserDetails customUserDetails = (CustomUserDetails) userDetails;
-                if (!customUserDetails.isStaff()) {
-                    return ResponseEntity.status(403)
-                            .body("Access denied: User must be staff");
-                }
-                String accessToken = jwtService.generateToken(userDetails);
-                String refreshToken = jwtService.generateToken(Map.of("tokenType", "refresh"), userDetails);
-                return ResponseEntity.ok(new LoginResponse(accessToken, refreshToken));
-            }
-            return ResponseEntity.status(401)
-                    .body("Unauthorized: User details not found");
+            return ResponseEntity.ok().body(loginResponse);
 
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse("An error occurred during authentication", "AUTH_500", System.currentTimeMillis()));
         }
     }
 
@@ -234,7 +253,6 @@ public class AuthController {
                 groups,
                 misc);
     }
-
 
     private AuthResponse.UserInfo createProfessorInfo(Professeur professor) {
         User user = professor.getUser();
@@ -283,10 +301,10 @@ public class AuthController {
                 misc);
     }
 
-    @PostMapping("/verify-is-prof")
+    @PostMapping("/verify-is-prof/")
     public ResponseEntity<?> verifyProfessor(@RequestBody Map<String, String> request) {
         try {
-            String idTokenString = request.get("idToken");
+            String idTokenString = request.get("token");
             GoogleIdToken.Payload payload = verifyGoogleToken(idTokenString);
             String email = payload.getEmail();
 
@@ -294,10 +312,36 @@ public class AuthController {
                     .orElseThrow(() -> new UsernameNotFoundException("Not a professor"));
 
             UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-            String token = jwtService.generateToken(userDetails);
+            String accessToken = jwtService.generateToken(userDetails);
             String refreshToken = jwtService.generateToken(Map.of("tokenType", "refresh"), userDetails);
 
-            return ResponseEntity.ok(new AuthResponse(token, refreshToken, createProfessorInfo(professor)));
+            User user = professor.getUser();
+            List<String> groups = user.getUserGroups() != null
+                    ? user.getUserGroups().stream()
+                    .map(userAuthGroup -> userAuthGroup.getAuthGroup().getName())
+                    .collect(Collectors.toList())
+                    : Collections.emptyList();
+
+            Map<String, Object> misc = Map.of(
+                    "etablissement", professor.getEtablissement().getIdEtablissement(),
+                    "labo", professor.getLabo_id()
+            );
+
+            ProfesseurAuthResponse professeurInfo = new ProfesseurAuthResponse(
+                    user.getEmail(),
+                    user.getLastName(),
+                    user.getFirstName(),
+                    professor.getPathPhoto(),
+                    groups,
+                    misc,
+                    professor.getGrade(),
+                    professor.getNombreProposer(),
+                    professor.getNombreEncadrer(),
+                    accessToken,
+                    refreshToken
+            );
+            return ResponseEntity.ok(professeurInfo);
+
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
@@ -382,24 +426,10 @@ public class AuthController {
         }
     }
 
-    @GetMapping("/protected")
-    public ResponseEntity<?> protectedRoute(HttpServletRequest request) {
-        UserDetails userDetails = (UserDetails) request.getAttribute("user");
-        User user = ((CustomUserDetails) userDetails).getUser();
-        return ResponseEntity.ok(user);
-    }
-
     @GetMapping("/get-user-info/")
     public ResponseEntity<?> getUserInfo(Authentication authentication) {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         User user = ((CustomUserDetails) userDetails).getUser();
         return ResponseEntity.ok(createUserInfo(user));
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> handleException(Exception e) {
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("An error occurred: " + e.getMessage());
     }
 }
