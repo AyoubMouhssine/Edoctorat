@@ -13,7 +13,7 @@ import java.util.List;
 public class FormationDoctoraleController {
     @Autowired
     private FormationDoctoraleService formationDoctoraleService;
-    @GetMapping("/formation-doctorale")
+    @GetMapping("/formation-doctorale/")
     public ResponseEntity<List<FormationDoctoraleDTO>> getFormationDoctorales() {
         return ResponseEntity.ok(formationDoctoraleService.getFormationDoctorales());
     }

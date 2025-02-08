@@ -15,8 +15,9 @@ public class ProfesseurController {
     @Autowired
     private ProfesseurService professeurService;
 
-    @GetMapping("/get-professeurs")
+    @GetMapping("/get-professeurs/")
     public ResponseEntity<List<ProfesseurDTO>> getProfesseurs() {
+        System.out.println("getProfesseur.");
         return ResponseEntity.ok(professeurService.getProfesseurs());
     }
 

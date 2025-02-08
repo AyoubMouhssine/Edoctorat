@@ -34,7 +34,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/api/login/",
+                                "/api/login",
                                 "/api/register/candidat/",
                                 "/api/token/refresh",
                                 "/api/verify-is-prof/",
@@ -42,7 +42,11 @@ public class SecurityConfig {
                                 "/api/confirm-email/",
                                 "/api/verify-token/",
                                 "/api/token/",
-                                "/api/login_scolarite/"
+                                "/api/login_scolarite/",
+                                "/api/sujets/",
+                                "/api/sujetslabo/",
+                                "/api/get-professeurs/",
+                                "/api/formation-doctorale/"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
