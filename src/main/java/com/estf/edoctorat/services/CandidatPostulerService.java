@@ -2,8 +2,10 @@ package com.estf.edoctorat.services;
 
 import com.estf.edoctorat.dto.CandidatPostulerDTO;
 import com.estf.edoctorat.dto.Result;
+import com.estf.edoctorat.dto.SujetDTO;
 import com.estf.edoctorat.mappers.CandidatPostulerMapper;
 import com.estf.edoctorat.models.CandidatPostuler;
+import com.estf.edoctorat.models.Sujet;
 import com.estf.edoctorat.repositories.CandidatPostulerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,9 @@ public class CandidatPostulerService {
 
     @Autowired
     private CandidatPostulerRepository candidatPostulerRepository;
+
+    /*@Autowired
+    private CandidatPostulerMapper candidatPostulerMapper;*/
 
     private final CandidatPostulerMapper candidatPostulerMapper = CandidatPostulerMapper.INSTANCE;
 
@@ -61,9 +66,11 @@ public class CandidatPostulerService {
     }
 
     public Result<CandidatPostulerDTO> getProfesseurCandidats() {
-        List<CandidatPostulerDTO> candidatPostulerDTOS = candidatPostulerRepository.findAll().stream()
-                .map(candidatPostulerMapper::candidatPostulerToCandidatPostulerDTO)
-                .collect(Collectors.toList());
-        return new Result<>(candidatPostulerDTOS, candidatPostulerDTOS.size());
+        List<CandidatPostuler> candidats = candidatPostulerRepository.findAll();
+        List<CandidatPostulerDTO> candidatsDTOs = candidats.stream().map(candidatPostulerMapper::candidatPostulerToCandidatPostulerDTO).collect(Collectors.toList());
+        // Specify Result<SujetDTO> explicitly
+        Result<CandidatPostulerDTO> result = new Result<>(candidatsDTOs, candidatsDTOs.size()); // Using size for total count
+        System.out.println(result);
+        return result;
     }
 }

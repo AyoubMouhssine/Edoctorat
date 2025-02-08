@@ -24,7 +24,7 @@ public class CandidatDTO {
     private int etatDossier;
     private String situationFamiliale;
     private boolean fonctionaire;
-    private Long paysId;
+    private PaysDTO pays;
     private Long userId;
 
 }
