@@ -150,7 +150,7 @@ public class AuthController {
             );
 
             return ResponseEntity.ok()
-                    .body(new LoginResponse(accessToken, refreshToken));
+                    .body(new AuthResponse(accessToken, refreshToken, createUserInfo(user)));
 
         } catch (Exception e) {
             return ResponseEntity
@@ -165,26 +165,47 @@ public class AuthController {
 
     @PostMapping("/login_scolarite/")
     public ResponseEntity<?> loginScolarite(@RequestBody LoginRequest loginRequest) {
-      return  authenticate(loginRequest);
-        //        try {
-//            authenticationManager.authenticate(
-//                    new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
-//            );
-//
-//            UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getUsername());
-//
-//            if (userDetails instanceof CustomUserDetails) {
-//                CustomUserDetails customUserDetails = (CustomUserDetails) userDetails;
-//                String accessToken = jwtService.generateToken(userDetails);
-//                String refreshToken = jwtService.generateToken(Map.of("tokenType", "refresh"), userDetails);
-//                return ResponseEntity.ok(new LoginResponse(accessToken, refreshToken));
-//            }
-//            return ResponseEntity.status(401)
-//                    .body("Unauthorized: Invalid user type");
-//
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
-//        }
+        try {
+            User user = userRepository.findByEmailOrUsername(loginRequest.getUsername())
+                    .orElseThrow(() -> {
+                        log.warn("Authentication failed: User not found - {}", loginRequest.getUsername());
+                        return new UsernameNotFoundException("User not found");
+                    });
+
+            try {
+                Authentication authentication = authenticationManager.authenticate(
+                        new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
+                );
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            } catch (BadCredentialsException e) {
+                return ResponseEntity
+                        .status(HttpStatus.UNAUTHORIZED)
+                        .body(new ErrorResponse("Invalid credentials", "AUTH_001", System.currentTimeMillis()));
+            }
+
+            UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
+            String accessToken = jwtService.generateToken(userDetails);
+            String refreshToken = jwtService.generateToken(Map.of("tokenType", "refresh"), userDetails);
+
+            LoginResponse loginResponse = new LoginResponse(
+                    accessToken,
+                    refreshToken,
+                    user.getUsername(),
+                    user.getEmail(),
+                    user.getUserGroups() != null
+                            ? user.getUserGroups().stream()
+                            .map(userAuthGroup -> userAuthGroup.getAuthGroup().getName())
+                            .collect(Collectors.toList())
+                            : Collections.emptyList()
+            );
+
+            return ResponseEntity.ok().body(loginResponse);
+
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse("An error occurred during authentication", "AUTH_500", System.currentTimeMillis()));
+        }
     }
 
     @PostMapping("/logout")
