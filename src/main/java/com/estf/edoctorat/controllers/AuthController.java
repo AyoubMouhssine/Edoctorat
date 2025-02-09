@@ -74,13 +74,6 @@ public class AuthController {
 
 //    public GoogleIdToken.Payload verifyGoogleToken(String idToken) throws GeneralSecurityException, IOException {
 //        System.out.println("Verifying Google Token: " + idToken);
-        GoogleIdToken token = GoogleIdToken.parse(Utils.getDefaultJsonFactory(), idToken);
-        if (token == null) {
-            System.out.println("Invalid token: Token is null");
-            return null;
-        }
-        return token.getPayload();
-//    }
 
     public GoogleIdToken.Payload verifyGoogleToken(String idToken) throws GeneralSecurityException, IOException {
         System.out.println("Verifying Google Token: " + idToken);
