@@ -1,10 +1,13 @@
 package com.estf.edoctorat.controllers;
+import com.estf.edoctorat.config.CustomUserDetails;
 import com.estf.edoctorat.dto.CandidatPostulerDTO;
 import com.estf.edoctorat.dto.Result;
 import com.estf.edoctorat.services.CandidatPostulerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -49,8 +52,7 @@ public class CandidatPostulerController {
 
     @GetMapping("/get-professeur-candidats")
     public ResponseEntity<Result<CandidatPostulerDTO>> getProfesseurCandidats() {
-        Result<CandidatPostulerDTO> result = candidatPostulerService.getProfesseurCandidats();
-        System.out.println(result);
+        Result<CandidatPostulerDTO> result = candidatPostulerService.getProfesseurCandidatsForCurrentUser();
         return ResponseEntity.ok(result);
     }
 }
