@@ -5,6 +5,6 @@ import lombok.Data;
 public class CandidatPostulerDTO {
     private Long id;
     private String pathFile;
-    private Long candidatId;
-    private Long sujetId;
+    private CandidatDTO candidat;  // Replace candidatId with CandidatDTO
+    private SujetDTO sujet;
 }
