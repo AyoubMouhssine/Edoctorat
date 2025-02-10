@@ -46,7 +46,8 @@ public class SecurityConfig {
                                 "/api/formation-doctorale/ ",
                                 "/api/get-professeurs/",
                                 "/api/get-professeur-candidats",
-                                "/api/sujets/"
+                                "/api/sujets/",
+                                "/uploads/**"
 
                         ).permitAll()
                         .anyRequest().authenticated()

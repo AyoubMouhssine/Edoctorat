@@ -1,6 +1,9 @@
 package com.estf.edoctorat.dto;
+
+import com.estf.edoctorat.dto.PaysDTO;
 import lombok.Data;
-import java.sql.Date;
+
+import java.util.Date;
 
 @Data
 public class CandidatDTO {
@@ -22,9 +25,13 @@ public class CandidatDTO {
     private String pathCv;
     private String pathPhoto;
     private int etatDossier;
-    private String situationFamiliale;
-    private boolean fonctionaire;
+    private String situationFamiliale; // Matches frontend's "situation_familiale"
+    private boolean fonctionnaire;    // Matches frontend's "fonctionnaire"
     private PaysDTO pays;
     private Long userId;
 
+    // Fields from User model
+    private String nom;       // From User
+    private String prenom;    // From User
+    private String email;     // From User
 }
