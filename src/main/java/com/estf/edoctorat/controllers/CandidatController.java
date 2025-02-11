@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Date;
 
@@ -115,6 +116,10 @@ public class CandidatController {
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
         Long userId = customUserDetails.getUser().getId();
 
+        // Fetch the existing candidate to get the old photo path
+        CandidatDTO existingCandidat = candidatService.getCandidatByUserId(userId);
+        String oldPhotoPath = existingCandidat != null ? existingCandidat.getPathPhoto() : null;
+
         // Create CandidatDTO
         CandidatDTO candidatDTO = new CandidatDTO();
         candidatDTO.setPrenom(prenom);
@@ -140,12 +145,22 @@ public class CandidatController {
 
         // Handle file upload
         if (file != null && !file.isEmpty()) {
-            String filePath = saveFile(file);
-            candidatDTO.setPathPhoto(filePath);
+            // Save the new file
+            String newFilePath = saveFile(file);
+            candidatDTO.setPathPhoto(newFilePath);
+        }else {
+            // Retain the existing photo if no new file is uploaded
+            candidatDTO.setPathPhoto(oldPhotoPath);
         }
 
         // Update candidat info
         CandidatDTO updatedCandidatDTO = candidatService.updateCandidatInfo(userId, candidatDTO);
+
+        // Delete the old photo AFTER successful update
+        if (file != null && !file.isEmpty() && oldPhotoPath != null) {
+            deleteFile(oldPhotoPath);
+        }
+
         return ResponseEntity.ok(updatedCandidatDTO);
     }
 
@@ -175,5 +190,24 @@ public class CandidatController {
         }
     }
 
+    private void deleteFile(String fileUrl) {
+        if (fileUrl == null || fileUrl.isEmpty()) {
+            return;
+        }
 
+        // Extract the filename from the URL (e.g., "/uploads/candidats/photo.png" → "photo.png")
+        String[] pathParts = fileUrl.split("/");
+        String fileName = pathParts[pathParts.length - 1];
+
+        // Build the full filesystem path
+        String filePath = Paths.get(uploadDir, "candidats", fileName).toString();
+
+        // Delete the file
+        try {
+            Files.deleteIfExists(Paths.get(filePath));
+        } catch (IOException e) {
+            System.err.println("Failed to delete old file: " + filePath);
+            e.printStackTrace();
+        }
+    }
 }
