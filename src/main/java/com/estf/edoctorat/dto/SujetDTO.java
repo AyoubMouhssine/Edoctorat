@@ -12,6 +12,6 @@ public class SujetDTO {
     private boolean publier;
     private Long formationDoctoraleId; // Use this field for the formationDoctoraleId
     private ProfesseurDTO professeur;
-    private ProfesseurDTO coDirecteur;
+    private CoDirecteurDTO coDirecteur;
     private FormationDoctoraleDTO formationDoctorale;
 }

@@ -12,6 +12,8 @@ public interface CandidatMapper {
 
     CandidatMapper INSTANCE = Mappers.getMapper(CandidatMapper.class);
 
+    @Mapping(source = "user.lastName", target = "nom")
+    @Mapping(source = "user.firstName", target = "prenom")
     @Mapping(source = "pays", target = "pays")
     @Mapping(source = "user.id", target = "userId")
     CandidatDTO candidatToCandidatDTO(Candidat candidat);

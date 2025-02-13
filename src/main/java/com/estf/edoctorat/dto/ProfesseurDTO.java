@@ -3,6 +3,8 @@ import lombok.Data;
 @Data
 public class ProfesseurDTO {
     private Long id;
+    private String nom;
+    private String prenom;
     private String cin;
     private String telProfesseur;
     private String pathPhoto;

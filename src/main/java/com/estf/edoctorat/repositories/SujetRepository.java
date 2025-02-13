@@ -12,4 +12,7 @@ public interface SujetRepository extends JpaRepository<Sujet, Long> {
 
     @Query("SELECT s FROM Sujet s ORDER BY s.id ASC")
     List<Sujet> findSujetsWithPagination(@Param("limit") int limit, @Param("offset") int offset);
+
+    List<Sujet> findByProfesseurId(Long professeurId);
+
 }

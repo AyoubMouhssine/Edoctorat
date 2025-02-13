@@ -10,6 +10,8 @@ public interface ProfesseurMapper {
     ProfesseurMapper INSTANCE = Mappers.getMapper(ProfesseurMapper.class);
 
     @Mapping(source = "etablissement.idEtablissement", target = "etablissementId")
+    @Mapping(source = "user.firstName", target = "prenom")
+    @Mapping(source = "user.lastName", target = "nom")
     @Mapping(source = "user.id", target = "userId")
     ProfesseurDTO professeurToProfesseurDTO(Professeur professeur);
 

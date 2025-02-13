@@ -20,9 +20,9 @@ public class Professeur {
     private String numSOM;
     private int nombreEncadrer;
     private int nombreProposer;
-
     private long labo_id;
-
+    @Column(name = "user_id", insertable = false, updatable = false) // Foreign key column
+    private Long userId;
     @ManyToOne
     @JoinColumn(name = "etablissement_id")
     private Etablissement etablissement;
@@ -36,4 +36,7 @@ public class Professeur {
 
     @OneToOne(mappedBy = "professeur", cascade = CascadeType.ALL, orphanRemoval = true)
     private Ced ced;
+
+    @OneToMany(mappedBy = "professeur", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Sujet> sujets;
 }

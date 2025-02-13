@@ -7,6 +7,8 @@ public class CandidatDTO {
     private Long id;
     private String cne;
     private String cin;
+    private String nom;
+    private String prenom;
     private String nomCandidatAr;
     private String prenomCandidatAr;
     private String adresse;

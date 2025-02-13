@@ -23,7 +23,7 @@ public class Sujet {
     private FormationDoctorale formationDoctorale;
     @OneToMany(mappedBy = "sujet", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CandidatPostuler> candidatPostulers;
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "professeur_id")
     private Professeur professeur;
     @OneToMany(mappedBy = "sujet", cascade = CascadeType.ALL, orphanRemoval = true)

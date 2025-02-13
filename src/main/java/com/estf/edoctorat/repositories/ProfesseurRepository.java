@@ -1,5 +1,6 @@
 package com.estf.edoctorat.repositories;
 
+import com.estf.edoctorat.dto.ParticipantDTO;
 import com.estf.edoctorat.models.Professeur;
 import com.estf.edoctorat.models.User;
 import org.springframework.data.domain.Page;
@@ -15,6 +16,8 @@ import java.util.Optional;
 public interface ProfesseurRepository extends JpaRepository<Professeur, Long> {
     Optional<Professeur> findByUser(User user);
 
+    Optional<Professeur> findByUserId(Long userId);
+
     @Query("SELECT p FROM Professeur p WHERE p.user.email = :email")
     Optional<Professeur> findByUserEmail(@Param("email") String email);
 
@@ -23,4 +26,7 @@ public interface ProfesseurRepository extends JpaRepository<Professeur, Long> {
 
     @Query("select P from Professeur P where P.labo_id = :labID")
     List<Professeur> findByLabo_id(@Param("labID") Long labID);
+
+
+
 }

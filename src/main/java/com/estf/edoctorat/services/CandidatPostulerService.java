@@ -70,7 +70,6 @@ public class CandidatPostulerService {
         List<CandidatPostulerDTO> candidatsDTOs = candidats.stream().map(candidatPostulerMapper::candidatPostulerToCandidatPostulerDTO).collect(Collectors.toList());
         // Specify Result<SujetDTO> explicitly
         Result<CandidatPostulerDTO> result = new Result<>(candidatsDTOs, candidatsDTOs.size()); // Using size for total count
-        System.out.println(result);
         return result;
     }
 }

@@ -13,8 +13,9 @@ import java.util.List;
 public class CommissionProfesseurController {
     @Autowired
     private CommissionProfesseurService commissionProfesseurService;
-    @GetMapping("/participant")
+    @GetMapping("/participant/")
     public ResponseEntity<List<CommissionProfesseurDTO>> getCommissionProfesseurs() {
+        System.out.println(commissionProfesseurService.getCommissionProfesseurs());
         return ResponseEntity.ok(commissionProfesseurService.getCommissionProfesseurs());
     }
     @GetMapping("/participant/{id}")

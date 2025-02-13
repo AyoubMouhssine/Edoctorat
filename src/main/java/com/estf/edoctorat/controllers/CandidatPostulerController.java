@@ -47,10 +47,9 @@ public class CandidatPostulerController {
         return  updateCandidatPostulerDTO != null ? ResponseEntity.ok(updateCandidatPostulerDTO) : ResponseEntity.notFound().build();
     }
 
-    @GetMapping("/get-professeur-candidats")
+    @GetMapping("/get-professeur-candidats/")
     public ResponseEntity<Result<CandidatPostulerDTO>> getProfesseurCandidats() {
         Result<CandidatPostulerDTO> result = candidatPostulerService.getProfesseurCandidats();
-        System.out.println(result);
         return ResponseEntity.ok(result);
     }
 }

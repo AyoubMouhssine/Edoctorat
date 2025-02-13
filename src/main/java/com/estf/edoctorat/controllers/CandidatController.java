@@ -21,9 +21,7 @@ public class CandidatController {
     public ResponseEntity<CandidatDTO> getCandidatInfo() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-
         Long userId = customUserDetails.getUser().getId();
-
         CandidatDTO candidatDTO = candidatService.getCandidatByUserId(userId);
 
         if (candidatDTO != null) {

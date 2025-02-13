@@ -8,8 +8,11 @@ import com.estf.edoctorat.mappers.SujetMapper;
 import com.estf.edoctorat.models.FormationDoctorale;
 import com.estf.edoctorat.models.Sujet;
 import com.estf.edoctorat.repositories.FormationDoctoraleRepository;
+import com.estf.edoctorat.repositories.ProfesseurRepository;
 import com.estf.edoctorat.repositories.SujetRepository;
+import com.estf.edoctorat.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,6 +22,11 @@ public class SujetService {
 
     @Autowired
     private SujetRepository sujetRepository;
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private ProfesseurRepository professeurRepository;
 
     @Autowired
     private SujetMapper sujetMapper;
@@ -44,6 +52,21 @@ public class SujetService {
         Result<SujetDTO> result = new Result<>(sujetDTOs, sujetDTOs.size()); // Using size for total count
         return result;
     }
+
+    public Result<SujetDTO> getSujetsByProfessor(Long professorId) {
+        // Retrieve the list of subjects by professor's ID
+        List<Sujet> sujets = sujetRepository.findByProfesseurId(professorId);
+
+        // Convert the list of Sujet to SujetDTO
+        List<SujetDTO> sujetDTOs = sujets.stream()
+                .map(sujetMapper::toDTO)
+                .collect(Collectors.toList());
+
+        // Return a Result object with the list and its size (total count)
+        Result<SujetDTO> result = new Result<>(sujetDTOs, sujetDTOs.size());
+        return result;
+    }
+
 
     public Result<SujetDTO> addSujet(SujetDTO sujetDTO) {
         // Retrieve the FormationDoctorale by its ID

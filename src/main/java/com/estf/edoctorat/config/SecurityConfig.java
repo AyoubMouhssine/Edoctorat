@@ -43,12 +43,14 @@ public class SecurityConfig {
                                 "/api/verify-token/",
                                 "/api/token/",
                                 "/api/login_scolarite/",
+                                "/api/formation-doctorale/",
+                                "/api/get-professeurs/",
+                                "/api/get-professeur-candidats/",
                                 "/api/sujets/",
                                 "/api/sujetslabo/",
-                                "/api/get-professeurs/",
-                                "/api/formation-doctorale/",
                                 "/api/sujets/{id}/",
-                                "/api/get-professeur-candidats"
+                                "/api/participant/"
+
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
