@@ -14,6 +14,6 @@ public class ProfesseurDTO {
     private int nombreProposer;
     private long labo_id;
     private Long etablissementId;
-//    private Long nom;
+    private Long userId;
 
 }

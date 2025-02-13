@@ -31,9 +31,5 @@ public class CandidatDTO {
     private boolean fonctionnaire;    // Matches frontend's "fonctionnaire"
     private PaysDTO pays;
     private Long userId;
-
-    // Fields from User model
-    private String nom;       // From User
-    private String prenom;    // From User
     private String email;     // From User
 }

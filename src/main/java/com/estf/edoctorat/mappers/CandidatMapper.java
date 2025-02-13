@@ -15,8 +15,6 @@ public interface CandidatMapper {
     @Mapping(source = "user.firstName", target = "prenom")
     @Mapping(source = "pays", target = "pays")
     @Mapping(source = "user.id", target = "userId")
-    @Mapping(source = "user.lastName", target = "nom")       // Map User.lastName to nom
-    @Mapping(source = "user.firstName", target = "prenom")   // Map User.firstName to prenom
     @Mapping(source = "user.email", target = "email")        // Map User.email to email
     CandidatDTO candidatToCandidatDTO(Candidat candidat);
 
