@@ -10,6 +10,10 @@ import com.estf.edoctorat.repositories.CandidatPostulerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.estf.edoctorat.config.CustomUserDetails;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -65,11 +69,20 @@ public class CandidatPostulerService {
         }
     }
 
-    public Result<CandidatPostulerDTO> getProfesseurCandidats() {
-        List<CandidatPostuler> candidats = candidatPostulerRepository.findAll();
-        List<CandidatPostulerDTO> candidatsDTOs = candidats.stream().map(candidatPostulerMapper::candidatPostulerToCandidatPostulerDTO).collect(Collectors.toList());
-        // Specify Result<SujetDTO> explicitly
-        Result<CandidatPostulerDTO> result = new Result<>(candidatsDTOs, candidatsDTOs.size()); // Using size for total count
-        return result;
+    // Add this method
+    public Result<CandidatPostulerDTO> getProfesseurCandidatsForCurrentUser() {
+        // Get current authenticated user
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        Long userId = userDetails.getUser().getId();
+
+        // Get candidates for this professor's subjects
+        List<CandidatPostuler> candidats = candidatPostulerRepository.findByProfesseurUserId(userId);
+
+        List<CandidatPostulerDTO> dtos = candidats.stream()
+                .map(candidatPostulerMapper::candidatPostulerToCandidatPostulerDTO)
+                .collect(Collectors.toList());
+
+        return new Result<>(dtos, dtos.size());
     }
 }

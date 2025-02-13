@@ -47,6 +47,7 @@ public class SecurityConfig {
                                 "/api/get-professeurs/",
                                 "/api/get-professeur-candidats/",
                                 "/api/sujets/",
+                                "/uploads/**",
                                 "/api/sujetslabo/",
                                 "/api/sujets/{id}/",
                                 "/api/participant/"

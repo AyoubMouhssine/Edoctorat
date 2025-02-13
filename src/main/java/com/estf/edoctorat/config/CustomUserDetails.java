@@ -56,4 +56,9 @@ public class CustomUserDetails implements UserDetails {
     public boolean isStaff(){
         return user.isStaff();
     }
+
+    // Add this method to get the user ID
+    public Long getProfesseurId() {
+        return user.getId(); // Assuming User class has getId method
+    }
 }

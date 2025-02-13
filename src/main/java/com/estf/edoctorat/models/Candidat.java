@@ -32,7 +32,7 @@ public class Candidat {
     private String pathPhoto;
     private int etatDossier;
     private String situationFamiliale;
-    private boolean fonctionaire;
+    private boolean fonctionnaire;
     @ManyToOne
     @JoinColumn(name = "pays_id")
     private Pays pays;
