@@ -50,7 +50,8 @@ public class SecurityConfig {
                                 "/uploads/**",
                                 "/api/sujetslabo/",
                                 "/api/sujets/{id}/",
-                                "/api/participant/"
+                                "/api/participant/",
+                                "/api/commission/"
 
                         ).permitAll()
                         .anyRequest().authenticated()

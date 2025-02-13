@@ -14,6 +14,6 @@ public class CommissionProfesseurDTO {
     private Date dateCommission;
     private String lieu;
     private Time heure;
-    private ProfesseurDTO participants;
+    private List<ProfesseurDTO> participants;
 //    private List<SujetDTO> sujets;
 }
