@@ -66,8 +66,8 @@ public class SujetController {
 
 
     @PostMapping("/sujets/")
-    public Result<SujetDTO> addSujet(@RequestBody SujetDTO sujetDTO) {
-        return sujetService.addSujet(sujetDTO);
+    public Result<SujetDTO> addSujet(@RequestBody SujetDTO sujetDTO, Authentication authentication ) {
+        return sujetService.addSujet(sujetDTO, authentication);
     }
 
     @DeleteMapping("/sujets/{id}/")

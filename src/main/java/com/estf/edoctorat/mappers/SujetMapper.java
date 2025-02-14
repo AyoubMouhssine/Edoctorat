@@ -11,6 +11,11 @@ import org.mapstruct.Mapping;
 public interface SujetMapper {
 
     // Existing method to map Sujet to SujetDTO
+    @Mapping(source = "codirecteur.id", target = "coDirecteurId")
+    @Mapping(source = "professeur.user.lastName", target = "professeur.nom")
+    @Mapping(source = "professeur.user.firstName", target = "professeur.prenom")
+    @Mapping(source = "codirecteur.user.lastName", target = "coDirecteur.nom")
+    @Mapping(source = "codirecteur.user.firstName", target = "coDirecteur.prenom")
     @Mapping(source = "professeur", target = "professeur")
     @Mapping(source = "codirecteur", target = "coDirecteur")
     @Mapping(source = "formationDoctorale", target = "formationDoctorale")
@@ -19,6 +24,8 @@ public interface SujetMapper {
     // Add the toEntity method to map SujetDTO to Sujet
     @Mapping(source = "professeur", target = "professeur")
     @Mapping(source = "coDirecteur", target = "codirecteur")
+    @Mapping(source = "coDirecteurId", target = "codirecteur.id")
+
     @Mapping(source = "formationDoctorale", target = "formationDoctorale")
     Sujet toEntity(SujetDTO sujetDTO);
 

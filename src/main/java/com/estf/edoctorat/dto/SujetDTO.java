@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SujetDTO {
     private Long id;
+    private Long professeurId;
+    private Long coDirecteurId;
     private String titre;
     private String description;
     private boolean publier;
