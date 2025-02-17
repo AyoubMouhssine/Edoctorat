@@ -8,5 +8,4 @@ public class AnnexeDTO {
     private String typeAnnexe;
     private String titre;
     private String pathFile;
-    private Long diplomeId;
 }

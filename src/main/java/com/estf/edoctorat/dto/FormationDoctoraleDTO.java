@@ -6,11 +6,11 @@ import java.util.Date;
 @Data
 public class FormationDoctoraleDTO {
     private Long id;
-    private String pathImage;
-    private String initiale;
-    private String titre;
+    private CedDTO ced;
+    private Long etablissement_id;
     private String axeDeRecherche;
-    private Date dateAccreditation;
-    private Long cedId;
-    private Long etablissementId;
+    private String pathImage;
+    private String titre;
+    private String initiale;
+    private String dateAccreditation;
 }

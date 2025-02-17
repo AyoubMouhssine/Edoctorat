@@ -171,7 +171,6 @@ public class AuthController {
                         log.warn("Authentication failed: User not found - {}", loginRequest.getUsername());
                         return new UsernameNotFoundException("User not found");
                     });
-
             try {
                 Authentication authentication = authenticationManager.authenticate(
                         new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())

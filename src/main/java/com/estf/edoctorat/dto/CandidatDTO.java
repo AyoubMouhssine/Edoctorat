@@ -1,12 +1,14 @@
 package com.estf.edoctorat.dto;
 import lombok.Data;
-import java.sql.Date;
+import java.util.Date;
 
 @Data
 public class CandidatDTO {
     private Long id;
     private String cne;
     private String cin;
+    private String nom;
+    private String prenom;
     private String nomCandidatAr;
     private String prenomCandidatAr;
     private String adresse;
@@ -23,8 +25,8 @@ public class CandidatDTO {
     private String pathPhoto;
     private int etatDossier;
     private String situationFamiliale;
-    private boolean fonctionaire;
-    private Long paysId;
+    private boolean fonctionnaire;
+    private PaysDTO pays;
     private Long userId;
-
+    private String email;
 }
